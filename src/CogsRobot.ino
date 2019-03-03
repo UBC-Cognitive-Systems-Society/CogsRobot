@@ -15,15 +15,24 @@
 #define LEFT_ECHO 4
 #define LEFT_TRIG 5
 
-#define RIGHT_ECHO 6
-#define RIGHT_TRIG 7
+#define FRONT_ECHO 6
+#define FRONT_TRIG 7
 
 HC_SR04 leftRange = HC_SR04(LEFT_TRIG, LEFT_ECHO);
-HC_SR04 rightRange = HC_SR04(RIGHT_TRIG, RIGHT_ECHO);
+HC_SR04 frontRange = HC_SR04(FRONT_TRIG, FRONT_ECHO);
+
+int rSpeed = 125;
+int lSpeed = 160;
+
+int ldistance;
+int fdistance;
 
 // setup() runs once, when the device is first turned on.
 void setup() {
-  // Put initialization like pinMode and begin functions here.
+   pinMode(MOTOR_A_1A, OUTPUT);
+   pinMode(MOTOR_A_1B, OUTPUT);
+   pinMode(MOTOR_B_1A, OUTPUT);
+   pinMode(MOTOR_B_1B, OUTPUT);
 
 }
 
@@ -31,4 +40,76 @@ void setup() {
 void loop() {
   // The core of your code will likely live here.
 
+}
+
+void sonarMovement(){
+   ldistance = leftRange.getDistanceCM();
+   fdistance = frontRange.getDistanceCM();
+   if(fdistance < 15){   // something in front
+    if(ldistance < 25){ //wall on the left side
+      stop();
+      delay(500);
+      back();
+      delay(500);
+      right();
+      delay(1000);
+    }else{              //no wall on the left side
+      back();
+      delay(500);
+      left();
+      delay(1000);
+    }
+  }else{ // nothing in front
+    if(ldistance > 30){
+        stop();
+        delay(500);
+        right();
+        delay(1000);
+        forward();
+        delay(1000);
+    }else{
+       forward();
+    }
+  }
+}
+
+void back() {
+          //LEFT MOTOR
+          analogWrite(MOTOR_A_1A, rSpeed);
+          analogWrite(MOTOR_A_1B, 0);
+          //RIGHT MOTOR
+          analogWrite(MOTOR_B_1A, lSpeed);
+          analogWrite(MOTOR_B_1B, 0);
+}
+void forward() {
+          //LEFT MOTOR
+          analogWrite(MOTOR_A_1A, 0);
+          analogWrite(MOTOR_A_1B, rSpeed);
+          //RIGHT MOTOR
+          analogWrite(MOTOR_B_1A, 0);
+          analogWrite(MOTOR_B_1B, lSpeed);
+}
+void left() {
+          //LEFT MOTOR
+          analogWrite(MOTOR_A_1A, 0);
+          analogWrite(MOTOR_A_1B, rSpeed);
+          //RIGHT MOTOR
+          analogWrite(MOTOR_B_1A, lSpeed);
+          analogWrite(MOTOR_B_1B, 0);
+}
+void right() {
+          //LEFT MOTOR
+          analogWrite(MOTOR_A_1A, rSpeed);
+          analogWrite(MOTOR_A_1B, 0);
+          //RIGHT MOTOR
+          analogWrite(MOTOR_B_1A, 0);
+          analogWrite(MOTOR_B_1B, lSpeed);
+}
+void stop() {
+          //LEFT MOTOR
+          analogWrite(MOTOR_A_1A, 0);
+          analogWrite(MOTOR_A_1B, 0);
+          //RIGHT MOTOR
+          analogWrite(MOTOR_B_1A, 0);
+          analogWrite(MOTOR_B_1B, 0);
 }
