@@ -32,9 +32,9 @@ double ratio = rInit/lInit;
 int ldistance;
 int fdistance;
 
-
 // setup() runs once, when the device is first turned on.
 void setup() {
+   Serial.begin();
    pinMode(MOTOR_A_1A, OUTPUT);
    pinMode(MOTOR_A_1B, OUTPUT);
    pinMode(MOTOR_B_1A, OUTPUT);
@@ -53,7 +53,8 @@ void setup() {
 void loop() {
   ldistance = leftRange.getDistanceCM();
   fdistance = frontRange.getDistanceCM();
-
+  delay(1000);
+  Serial.print(ldistance);
 }
 
 int sonarbehavior(String extra){
