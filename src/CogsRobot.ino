@@ -24,6 +24,8 @@ HC_SR04 frontRange = HC_SR04(FRONT_TRIG, FRONT_ECHO);
 int rSpeed = 125;
 int lSpeed = 160;
 
+double ratio = 125/160;
+
 int ldistance;
 int fdistance;
 
@@ -37,9 +39,11 @@ void setup() {
 
    Particle.variable("left distance", &ldistance, INT);
    Particle.variable("front distance", &fdistance, INT);
+   Particle.variable("speed", &lSpeed, INT);
 
    Particle.function("move", moverobot);
    Particle.function("sonar", sonarbehavior);
+   Particle.function("set speed", setSpeed);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
@@ -51,6 +55,11 @@ void loop() {
 int sonarbehavior(String extra){
   sonarMovement();
   return 0;
+}
+
+int setSpeed(String speed){
+  lSpeed = atoi(speed);
+  rSpeed = (int) lSpeed * ratio;
 }
 
 int moverobot(String command){
