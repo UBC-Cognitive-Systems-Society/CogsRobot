@@ -27,6 +27,7 @@ int lSpeed = 160;
 int ldistance;
 int fdistance;
 
+
 // setup() runs once, when the device is first turned on.
 void setup() {
    pinMode(MOTOR_A_1A, OUTPUT);
@@ -34,12 +35,41 @@ void setup() {
    pinMode(MOTOR_B_1A, OUTPUT);
    pinMode(MOTOR_B_1B, OUTPUT);
 
+   Particle.variable("left distance", &ldistance, INT);
+   Particle.variable("front distance", &fdistance, INT);
+
+   Particle.function("move", moverobot);
+   Particle.function("sonar", sonarbehavior);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
   // The core of your code will likely live here.
 
+}
+
+int sonarbehavior(String extra){
+  sonarMovement();
+  return 0;
+}
+
+int moverobot(String command){
+  if(command == "forward"){
+    forward();
+    return 0;
+  } else if(command == "back"){
+    back();
+    return 0;
+  } else if(command == "left"){
+    left();
+    return 0;
+  } else if(command == "right"){
+    right();
+    return 0;
+  } else{
+    stop();
+    return 0;
+  }
 }
 
 void sonarMovement(){
