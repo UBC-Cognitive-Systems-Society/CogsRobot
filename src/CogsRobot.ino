@@ -21,10 +21,13 @@
 HC_SR04 leftRange = HC_SR04(LEFT_TRIG, LEFT_ECHO);
 HC_SR04 frontRange = HC_SR04(FRONT_TRIG, FRONT_ECHO);
 
-int rSpeed = 125;
-int lSpeed = 160;
+int rInit = 160;
+int lInit = 160;
 
-double ratio = 125/160;
+int rSpeed = rInit;
+int lSpeed = lInit;
+
+double ratio = rInit/lInit;
 
 int ldistance;
 int fdistance;
