@@ -29,6 +29,8 @@ int lSpeed = lInit;
 
 double ratio = rInit/lInit;
 
+bool sonar = false;
+
 int ldistance;
 int fdistance;
 
@@ -40,10 +42,6 @@ void setup() {
    pinMode(MOTOR_B_1A, OUTPUT);
    pinMode(MOTOR_B_1B, OUTPUT);
 
-   Particle.variable("left distance", &ldistance, INT);
-   Particle.variable("front distance", &fdistance, INT);
-   Particle.variable("speed", &lSpeed, INT);
-
    Particle.function("move", moverobot);
    Particle.function("sonar", sonarbehavior);
    Particle.function("set speed", setSpeed);
@@ -51,20 +49,19 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  ldistance = leftRange.getDistanceCM();
-  fdistance = frontRange.getDistanceCM();
-  delay(1000);
-  Serial.print(ldistance);
+  if(sonar){
+    sonarMovement();
+  }
 }
 
 int sonarbehavior(String extra){
-  sonarMovement();
+  sonar = true;
   return 0;
 }
 
 int setSpeed(String speed){
   lSpeed = atoi(speed);
-  rSpeed = (int) lSpeed * ratio;
+  rSpeed = (int) (lSpeed * ratio);
 }
 
 int moverobot(String command){
@@ -89,6 +86,8 @@ int moverobot(String command){
 void sonarMovement(){
    ldistance = leftRange.getDistanceCM();
    fdistance = frontRange.getDistanceCM();
+   Particle.publish("leftDistance", (String)ldistance, PUBLIC);
+   Particle.publish("frontDistance", (String)fdistance, PUBLIC);
    if(fdistance < 15){   // something in front
     if(ldistance < 25){ //wall on the left side
       stop();
@@ -118,6 +117,7 @@ void sonarMovement(){
 }
 
 void back() {
+          Particle.publish("Direction", "backwards", PUBLIC);
           //LEFT MOTOR
           analogWrite(MOTOR_A_1A, rSpeed);
           analogWrite(MOTOR_A_1B, 0);
@@ -127,6 +127,7 @@ void back() {
 }
 void forward() {
           //LEFT MOTOR
+          Particle.publish("Direction", "forward", PUBLIC);
           analogWrite(MOTOR_A_1A, 0);
           analogWrite(MOTOR_A_1B, rSpeed);
           //RIGHT MOTOR
@@ -134,6 +135,7 @@ void forward() {
           analogWrite(MOTOR_B_1B, lSpeed);
 }
 void left() {
+          Particle.publish("Direction", "left", PUBLIC);
           //LEFT MOTOR
           analogWrite(MOTOR_A_1A, 0);
           analogWrite(MOTOR_A_1B, rSpeed);
@@ -142,6 +144,7 @@ void left() {
           analogWrite(MOTOR_B_1B, 0);
 }
 void right() {
+          Particle.publish("Direction", "right", PUBLIC);
           //LEFT MOTOR
           analogWrite(MOTOR_A_1A, rSpeed);
           analogWrite(MOTOR_A_1B, 0);
@@ -150,6 +153,7 @@ void right() {
           analogWrite(MOTOR_B_1B, lSpeed);
 }
 void stop() {
+          Particle.publish("Direction", "stopped", PUBLIC);
           //LEFT MOTOR
           analogWrite(MOTOR_A_1A, 0);
           analogWrite(MOTOR_A_1B, 0);
